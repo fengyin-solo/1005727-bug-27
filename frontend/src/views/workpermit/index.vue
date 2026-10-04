@@ -24,6 +24,40 @@
       </span>
     </p>
 
+    <section class="todo-panel">
+      <h3 class="todo-title">工作票许可待办理清单（超期未完工主变检修）</h3>
+      <p class="todo-desc">
+        超期判定以调度批复工期为准、无批复时按计划工期，已完工不计；已办过票的检修单不再重复出现。
+      </p>
+      <table v-if="todoRows.length" class="data-table">
+        <thead>
+          <tr>
+            <th>检修编号</th>
+            <th>主变名称</th>
+            <th>检修类别</th>
+            <th>当前状态</th>
+            <th>工期截止</th>
+            <th>超期天数</th>
+            <th>办理</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row in todoRows" :key="`todo-${row.id}`">
+            <td>{{ row['检修编号'] }}</td>
+            <td>{{ row['主变名称'] }}</td>
+            <td>{{ row['检修类别'] }}</td>
+            <td>{{ row.status }}</td>
+            <td>{{ overdueInfo(row).end }}（{{ overdueInfo(row).source }}）</td>
+            <td><span class="tag tag-overdue">超期{{ overdueInfo(row).days }}天</span></td>
+            <td class="row-actions">
+              <button class="link" type="button" @click="issueTodo(row)">办理工作票</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p v-else class="empty-state todo-empty">暂无超期未完工的主变检修记录，待办理清单为空</p>
+    </section>
+
     <form class="filter-bar" @submit.prevent="reload">
       <label v-for="field in filterFields" :key="field" class="filter-item">
         <span>{{ field }}</span>
@@ -75,9 +109,12 @@ import { computed, onMounted, ref } from 'vue'
 
 import {
   downloadEntries,
+  issueOverduePermit,
   listEntries,
+  listOverduePermitTodos,
   moduleMeta,
   runAction as applyAction,
+  transformerOverdueInfo,
 } from '@/api/local-service'
 import type { EntryRow } from '@/data/types'
 
@@ -88,6 +125,7 @@ const statuses = ["待签发", "已许可", "已终结", "已作废"]
 const stats = [{"label": "待签发工作票", "value": 0}, {"label": "已许可工作票", "value": 0}, {"label": "已终结工作票", "value": 0}]
 
 const rows = ref<EntryRow[]>([])
+const todoRows = ref<EntryRow[]>([])
 const total = ref(0)
 const errorMessage = ref('')
 const filters = ref<Record<string, string>>({})
@@ -98,6 +136,27 @@ const statusSummary = computed(() =>
     count: rows.value.filter((row) => String(row.status) === status).length,
   })),
 )
+
+function overdueInfo(row: EntryRow) {
+  return transformerOverdueInfo(row)
+}
+
+function refreshTodos() {
+  // 超期未完工的结论直接反映到工作票许可的待办理清单。
+  todoRows.value = listOverduePermitTodos()
+}
+
+function issueTodo(row: EntryRow) {
+  errorMessage.value = ''
+  const result = issueOverduePermit(Number(row.id))
+  if (!result.ok) {
+    errorMessage.value = result.message
+    return
+  }
+  errorMessage.value = result.message
+  refreshTodos()
+  reload()
+}
 
 function resetFilters() {
   filters.value = {}
@@ -128,6 +187,7 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    refreshTodos()
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '工作票许可列表读取失败'
   }

@@ -35,3 +35,47 @@ body { margin: 0; background: #f6f8fb; color: #1f2937; }
 .error-text { color: #b42318; }
 .status-legend { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 10px; font-size: 12px; color: var(--muted); }
 .legend-item { background: #eef2f7; border-radius: 999px; padding: 2px 10px; }
+.legend-warn { background: #fef3f2; color: #b42318; border-radius: 999px; padding: 2px 10px; }
+.legend-tip { align-self: center; }
+
+/* 可排序表头与翻页条：排序、翻页、跳转共用同一份数据 */
+.data-table th { cursor: pointer; user-select: none; white-space: nowrap; }
+.sort-mark { color: var(--brand); font-size: 11px; }
+.pager-bar { align-items: center; gap: 10px; flex-wrap: wrap; }
+.pager-controls { display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.pager-controls .btn { padding: 4px 10px; }
+.pager-controls .btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+.jump-item { display: inline-flex; gap: 4px; align-items: center; }
+.jump-input { width: 56px; padding: 4px 6px; border: 1px solid var(--border); border-radius: 6px; }
+.notice-text { color: #b54708; font-size: 12px; }
+
+/* 超期/待补录标记 */
+.tag { display: inline-block; border-radius: 4px; padding: 1px 8px; font-size: 12px; white-space: nowrap; }
+.tag-overdue { background: #fef3f2; color: #b42318; border: 1px solid #fecdca; }
+.tag-legacy { background: #fffaeb; color: #b54708; border: 1px solid #fedf89; }
+.approved-mark { display: inline-block; background: #ecfdf3; color: #027a48; border: 1px solid #abefc6; border-radius: 4px; padding: 0 6px; margin-right: 4px; font-size: 12px; }
+.muted-text { color: var(--muted); }
+.row-overdue { background: #fff8f7; }
+
+/* 工作票待办理清单 */
+.todo-panel { background: #fff; border: 1px solid #fecdca; border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; }
+.todo-title { margin: 0 0 4px; font-size: 14px; color: #b42318; }
+.todo-desc { margin: 0 0 8px; font-size: 12px; color: var(--muted); }
+.todo-empty { padding: 10px; }
+
+/* 详情面板与登记弹窗：列表与详情同源，主变名称保持一致 */
+.modal-mask { position: fixed; inset: 0; background: rgba(16, 24, 40, 0.45); display: flex; align-items: center; justify-content: center; z-index: 20; }
+.modal-panel { background: #fff; border-radius: 10px; width: min(680px, 92vw); max-height: 86vh; overflow: auto; padding: 16px 18px; }
+.modal-head { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 10px; }
+.modal-head h3 { margin: 0; font-size: 16px; }
+.detail-grid { display: grid; grid-template-columns: 110px 1fr; gap: 6px 12px; margin: 0; font-size: 13px; }
+.detail-grid dt { color: var(--muted); }
+.detail-grid dd { margin: 0; }
+.cell-overdue { color: #b42318; font-weight: 600; }
+.detail-tip { font-size: 12px; color: var(--muted); margin-top: 10px; }
+.create-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
+.create-item { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+.create-item:last-of-type { grid-column: 1 / -1; }
+.create-item input, .create-item select { padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; color: #1f2937; }
+.create-item em { color: #b42318; font-style: normal; margin-left: 2px; }
+.modal-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
